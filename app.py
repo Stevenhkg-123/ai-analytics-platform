@@ -12,7 +12,6 @@ from io import BytesIO
 from pathlib import Path
 
 import trio
-from quart import Response, make_response, request
 from quart.typing import ResponseReturnValue
 from quart_trio import QuartTrio
 
