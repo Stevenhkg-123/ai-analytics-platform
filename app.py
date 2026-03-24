@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from openai import OpenAI
+import os
 
 # API Configuration
 client = OpenAI(
