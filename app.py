@@ -1,6 +1,7 @@
 
 import streamlit as st
 import pandas as pd
+import altair as alt
 from openai import OpenAI
 import os
 
@@ -93,14 +94,33 @@ if uploaded_file:
         st.metric("High Engagement", level_counts["High"])
 
     engagement_chart = pd.DataFrame({
+        "Engagement Level": ["Low", "Moderate", "High"],
         "Number of Users": [
             level_counts["Low"],
             level_counts["Moderate"],
             level_counts["High"]
         ]
-    }, index=["Low", "Moderate", "High"])
+    })
 
-    st.bar_chart(engagement_chart)
+    chart = alt.Chart(engagement_chart).mark_bar().encode(
+        x=alt.X(
+            "Engagement Level:N",
+            sort=["Low", "Moderate", "High"],
+            title="Engagement Level"
+        ),
+        y=alt.Y(
+            "Number of Users:Q",
+            title="Number of Users"
+        ),
+        tooltip=[
+            "Engagement Level",
+            "Number of Users"
+        ]
+    ).properties(
+        height=400
+    )
+
+    st.altair_chart(chart, use_container_width=True)
 
     with st.expander("View User Engagement Details"):
         st.dataframe(
