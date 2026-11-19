@@ -92,7 +92,15 @@ if uploaded_file:
     with col3:
         st.metric("High Engagement", level_counts["High"])
 
-    st.bar_chart(level_counts)
+    engagement_chart = pd.DataFrame({
+        "Number of Users": [
+            level_counts["Low"],
+            level_counts["Moderate"],
+            level_counts["High"]
+        ]
+    }, index=["Low", "Moderate", "High"])
+
+    st.bar_chart(engagement_chart)
 
     with st.expander("View User Engagement Details"):
         st.dataframe(
