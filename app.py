@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 from openai import OpenAI
@@ -22,7 +23,6 @@ if uploaded_file:
     with st.expander("View Raw Data (First 100 Rows)"):
         st.dataframe(df.head(100))
 
-    # Analytics Module
     total_records = len(df)
 
     completed = df[df["status"].isin(["submitted", "completed"])].shape[0]
@@ -36,7 +36,6 @@ if uploaded_file:
     else:
         avg_duration = 0
 
-    # Visualization
     st.subheader("Analytics Dashboard")
 
     col1, col2, col3, col4 = st.columns(4)
@@ -59,7 +58,50 @@ if uploaded_file:
     st.subheader("User Activity")
     st.bar_chart(activity)
 
-    # AI Module
+    st.subheader("Engagement Level Distribution")
+
+    user_engagement = activity.reset_index()
+    user_engagement.columns = ["user_id", "activity_count"]
+
+    def classify_engagement(count):
+        if count < 15:
+            return "Low"
+        elif count < 25:
+            return "Moderate"
+        else:
+            return "High"
+
+    user_engagement["engagement_level"] = (
+        user_engagement["activity_count"].apply(classify_engagement)
+    )
+
+    level_counts = (
+        user_engagement["engagement_level"]
+        .value_counts()
+        .reindex(["Low", "Moderate", "High"], fill_value=0)
+    )
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric("Low Engagement", level_counts["Low"])
+
+    with col2:
+        st.metric("Moderate Engagement", level_counts["Moderate"])
+
+    with col3:
+        st.metric("High Engagement", level_counts["High"])
+
+    st.bar_chart(level_counts)
+
+    with st.expander("View User Engagement Details"):
+        st.dataframe(
+            user_engagement.sort_values(
+                "activity_count", ascending=False
+            ),
+            use_container_width=True
+        )
+
     st.subheader("AI Interpretation")
 
     def generate_llm_feedback(rate, engagement, duration, users):
